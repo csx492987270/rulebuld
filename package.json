@@ -1,8 +1,9 @@
 {
 	"name": "rulebuild",
 	"displayName": "RuleBuild",
-	"description": "",
-	"version": "0.0.1",
+	"description": "topology 集成",
+	"publisher": "sixue",
+	"version": "0.0.7",
 	"engines": {
 		"vscode": "^1.52.0"
 	},
@@ -22,7 +23,7 @@
 			},
 			{
 				"command": "rulebuild.newHtml",
-				"title": "createRule"
+				"title": "RuleBulider"
 			}
 		],
 		"menus": {

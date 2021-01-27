@@ -742,11 +742,13 @@ var Topology = {
         // }
     ],
     // 对象的最初入口
-    init: function () {
+    init: function (data) {
         var self = this;
         //绑定事件
+        $("#canBox").html('')
+        $("#canBox").html('<div id="topo_canvas"></div>')
         self.bindEvent();
-        self.initCanvas();
+        self.initCanvas(data);
         //初始化颜色选择器
         $('.colorpicker').colorpicker();
     },
@@ -886,9 +888,9 @@ var Topology = {
             return false;
         });
         // 保存画布数据
-        $(document).on("click", "#canvas_save", function () {
-            self.saveKnowledgeMap();
-        });
+        // $(document).on("click", "#canvas_save", function () {
+        //     self.saveKnowledgeMap();
+        // });
         // -------查询开始-------------
         $(document).on('click', '#search_knowledge_btn', function () {
             console.log("aaa");
@@ -899,7 +901,7 @@ var Topology = {
         });
     },
     // 初始化画布
-    initCanvas: function () {
+    initCanvas: function (newData) {
         var self = this;
         console.log("initCanvas")
         // 3. 向引擎注册图形库图形及其相关元素
@@ -930,15 +932,6 @@ var Topology = {
         $("#menu_combine").attr('disabled', true);
         $("#menu_unCombine").attr('disabled', false);
         // 初始化canvas
-        // var data = {
-        //     "nodes": [],
-        //     "lines": [],
-        //     "lineName": "curve",
-        //     "fromArrowType": "",
-        //     "toArrowType": "triangleSolid",
-        //     "scale": 1,
-        //     "locked": 0
-        // };
         var data = {
             "nodes": [],
             "lines": [],
@@ -948,8 +941,7 @@ var Topology = {
             "scale": 1,
             "locked": 0
         };
-        // data =JSON.parse(localStorage.getItem('stor')) || {}
-        
+         data =newData&&newData!=undefined?newData:data
         var canvasOptions = {on: onMessage};
         canvas = new Le5leTopology.Topology('topo_canvas', canvasOptions);
 
@@ -1465,27 +1457,15 @@ var Topology = {
     parse: function () {
         canvas.parse();
     },
-    onClickShow:function(val){
-       
+    onClickShow:function(val){ 
         switch(val){
             case 'left':
-                // if($("#boxLeft").hasClass('hidden')){
-                //     $("#boxLeft").removeClass("hidden");
-                // }else {
-                    $("#boxLeft").toggle() ;
-                    var self = this;
-                    //绑定事件
-                    // Topology.init();
-                //}
+                $("#boxLeft").toggle();
+                 Topology.init(canvas.data);
                 break;
             case 'right':
-                // if($("#flex_props").hasClass('hidden')){
-                //    $("#flex_props").removeClass("hidden");
-                // }else {
-                    var self = this;
-                   $("#flex_props").toggle() ;
-                //    Topology.initCanvas();
-               // }
+                $("#flex_props").toggle() ;
+                Topology.init(canvas.data);
                  break;
         }
     }

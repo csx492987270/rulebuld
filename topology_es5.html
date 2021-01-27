@@ -28,9 +28,8 @@
 
                         <nav class="navbar navbar-default">
                             <ul class="nav nav-pills">
-                                <li><a href="#" id="canvas_save">保存</a></li>
-                                <li><a href="#" id="down_png">下载PNG</a></li>
-                                <li style="width: 100%;text-align: center"><a href="#" id="canvas_title">业务规则生成器</a></li>
+                                <li style="width: 100%;text-align: center"><a href="#" id="canvas_title">业务规则生成器</a>
+                                </li>
                             </ul>
                         </nav>
 
@@ -38,76 +37,82 @@
                             <div class="boxLeft" id="boxLeft">
                                 <div class="boxoPeration">
                                     <button type="button" class="btn btn-primary btn-xs">函数集</button>
-                                    <button type="button" class="btn btn-default btn-xs">函数集成</button>
+                                    <button type="button" class="btn btn-default btn-xs"
+                                        onclick="createFs()">函数集成</button>
                                 </div>
-                                <div class="selectb">
-                                    <div class="dropdown fl">
-                                        <button class="btn btn-default dropdown-toggle btn-xs" type="button"
-                                            id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true"
-                                            aria-expanded="true">
-                                            Dropdown
-                                            <span class="caret"></span>
-                                        </button>
-                                        <ul class="dropdown-menu overH" aria-labelledby="dropdownMenu1">
-                                            <li><a href="#">Action</a></li>
-                                            <li><a href="#">Action</a></li>
-                                        </ul>
+                                <div class="linesd"></div>
+                                <div class="flex grid">
+                                    <div class="col-xs-6">
+                                        <select name="fontStyle" class="form-select" onchange="selectPackage()"
+                                            id="ddlResourceType">
+                                        </select>
                                     </div>
-                                    <div class="dropdown fr">
-                                        <button class="btn btn-default dropdown-toggle btn-xs" type="button"
-                                            id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true"
-                                            aria-expanded="true">
-                                            Dropdown
-                                            <span class="caret"></span>
-                                        </button>
-                                        <ul class="dropdown-menu overH" aria-labelledby="dropdownMenu1">
-                                            <li><a href="#">Action</a></li>
-                                            <li><a href="#">Action</a></li>
-                                        </ul>
+                                    <div class="col-xs-6">
+                                        <select name="fontWeight" class="form-select" id="classbo"
+                                            onchange="sliceClass()">
+                                        </select>
                                     </div>
                                 </div>
-                                <div class="list-group clear">
-                                    <!-- <a href="#" class="list-group-item disabled">
-                                  Cras justo odio
-                                </a> -->
-                                    <a href="#" class="list-group-item">Dapibus ac facilisis in</a>
-                                    <a href="#" class="list-group-item">Morbi leo risus</a>
-                                    <a href="#" class="list-group-item">Porta ac consectetur ac</a>
-                                    <a href="#" class="list-group-item">Vestibulum at eros</a>
+                                <div class="linesd"></div>
+                                <div class="list-group clear" id="fns">
+                                    <div class="nodata">...暂无数据...</div>
                                 </div>
+                                <div class="linesd"></div>
                                 <div class="boxoPeration">
-                                    <button type="button" class="btn btn-primary btn-xs">RUles集合</button>
-                                    <button type="button" class="btn btn-default btn-xs">新增Urule</button>
+                                    <button type="button" class="btn btn-primary btn-xs"
+                                        onclick="addUrule()">RUles集合</button>
+                                    <button type="button" class="btn btn-default btn-xs" data-toggle="modal"
+                                        onclick="addUrule()">新增Urule</button>
                                 </div>
-                                <div class="list-group clear">
-                                    <!-- <a href="#" class="list-group-item disabled">
-                                  Cras justo odio
-                                </a> -->
-                                    <a href="#" class="list-group-item">Dapibus ac facilisis in</a>
-                                    <a href="#" class="list-group-item">Morbi leo risus</a>
-                                    <a href="#" class="list-group-item">Porta ac consectetur ac</a>
-                                    <a href="#" class="list-group-item">Vestibulum at eros</a>
+                                <div class="linesd"></div>
+                                <div class="list-group clear" id="urule">
+                                    <div class="nodata">...暂无数据...</div>
                                 </div>
-                                <div class="txtCenter">
-                                    <button type="button" class="btn btn-default btn-xs">连接服务器</button>
-                                    <div class="progress">
-                                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
-                                          <!-- <span class="sr-only">40% Complete (success)</span> -->
+                                <div class="linesd"></div>
+                                <div class="boxoPeration  clear">
+                                    <button type="button" class="btn btn-primary btn-xs">fsm集</button>
+                                    <button type="button" class="btn btn-default btn-xs"
+                                        onclick="addCanvas()">新增fsm</button>
+                                </div>
+                                <div class="linesd"></div>
+                                <div class="list-group clear" id="ruleList">
+                                    <div class="nodata">...暂无数据...</div>
+                                </div>
+                                <div class="linesd"></div>
+                                <div class="txtCenter  clear">
+                                    <div style="margin-bottom: 5px;">
+                                        <button type="button" class="btn btn-default btn-xs"
+                                            onclick="toShell()">连接服务器</button>
+                                    </div>
+                                    <div class="linesd"></div>
+                                    <div class="filist">
+                                        <div id="tableMiUrl" class="fileSty" fileurl=''>
+                                            <span class="ishave"></span><span class="files">vtable.mi文件</span>
                                         </div>
-                                      </div>
-                                      <div class="progress">
-                                        <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
-                                          <span class="sr-only">80% Complete (danger)</span>
+                                        <div id="miFileUrl" class="fileSty" fileurl=''>
+                                            <span class="ishave"></span><span class="files">fsm.mi文件</span>
                                         </div>
-                                      </div>
+                                        <div id="jarUrl" class="fileSty" fileurl=''>
+                                            <span class="ishave"></span><span class="files">jar文件</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div id="flex_canvas">
-                                <!-- <div class="contesL"  onclick="onClickShow('left')"><span class="glyphicon glyphicon-chevron-left"></span></div> -->
-                                <!-- <div class="contesR"  onclick="onClickShow('right')"><span class="glyphicon glyphicon-chevron-right"></span></div> -->
+                                <div class="contesL" onclick="onClickShow('left')"><span
+                                        class="glyphicon glyphicon-chevron-left"></span></div>
+                                <div class="contesR" onclick="onClickShow('right')"><span
+                                        class="glyphicon glyphicon-chevron-right"></span></div>
+                                <div class="operations">
+                                    <input type="text" placeholder="请输入fsm名称" name="" id="rulename">
+                                    <a href="#" id="canvas_save">保存</a>
+                                    <a href="#" id="down_png">下载PNG</a>
+                                </div>
                                 <div class="tools" id="flex_tools">
                                 </div>
-                                <div class="canvas" id="topo_canvas"></div>
+                                <div id="canBox">
+                                    <!-- <div  id="topo_canvas"></div> -->
+                                </div>
                             </div>
                             <div class="props" id="flex_props">
                                 <div class="pv5">
@@ -840,13 +845,6 @@
                                                             onchange="onChangeProp()" />
                                                     </div>
                                                 </div>
-                                                <!-- <div class="mt5 col-xs-12 sub-title">
-                                                    内容
-                                                </div>
-                                                <div class="col-xs-12">
-                                                    <textarea name="text" class="form-control input-sm" rows="2"
-                                                        onchange="onChangeProp()"></textarea>
-                                                </div> -->
                                                 <div class="node-show">
                                                     <div id="node_color">
                                                         <div class="mt5 col-xs-12 sub-title">
@@ -1049,18 +1047,309 @@
             </section>
             <!-- /.content -->
         </div>
+
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="recipient-name" class="control-label">URULE-NAME:</label>
+                                <input type="text" class="form-control" id="contentInp">
+                            </div>
+                            <div class="form-group">
+                                <label for="message-text" class="control-label">描述:</label>
+                                <textarea class="form-control" id="idTxt"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary" onclick="submit()">提交</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- /.content-wrapper -->
     </div>
 
-
     <!-- jQuery 3.3.1 -->
+    <script src="./plugins/topology/clipboard.min.js"></script>
     <script src="./plugins/jquery/3.3.1/jquery-3.3.1.min.js"></script>
     <script src="./plugins/bootstrap/3.3.5/bootstrap.min.js"></script>
     <script src="./plugins/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js"></script>
     <script src="./plugins/topology/topology.bundle.js"></script>
-
     <script src="topology/topology_es5.js"></script>
+    <script>
+        //引进vsode 接收 传输数据 Api
+        const vscode = acquireVsCodeApi();
+        let isEdit = ''
+        let allFnList = [] //所有数据集
+        let packageArr = [] //包名
+        // 接收生成的数据
+        window.addEventListener('message', event => {
+            const message = event.data;
+            switch (message.type) {
+                case 'fnList':
+                    packageGet(message)
+                    changColor('tableMiUrl', message.tableMiUrl)
+                    break;
+                case 'ruleList':
+                    changColor('miFileUrl', message.miFileUrl)
+                    changColor('jarUrl', message.jarUrl)
+                    changColor('tableMiUrl', message.tableMiUrl)
+                    createList(message)
+                    createData(message)
+                    break;
+                case 'refresh':
+                    refresh(message)
+                    break;
+                case 'del':
+                    let ruleName = document.getElementById('rulename').value;
+                    if (ruleName == message.name) {
+                        $("#rulename").val('')
+                        changColor('miFileUrl', '')
+                        Topology.init()
+                    }
+                    createList(message)
+                    break;
+                case 'addUrule':
+                    if (message.status == 'yes') {
+                        closeDialog()
+                        createData(message)
+                    } else {
+                        createData(message)
+                    }
+                    break;
+                default:
+                    break;
+            }
+        })
 
+        // ...............................................//
+
+        //点击生成数据
+        function createFs() {
+            vscode.postMessage({ command: 'createFs', text: 'create' });
+        }
+        // 切换颜色
+        function changColor(id, url) {
+            if (url && url != '') {
+                $(`#${id}>.ishave`).css("background-color", '#24adf3')
+            } else {
+                $(`#${id}>.ishave`).css("background-color", 'red')
+            }
+            $(`#${id}`).attr("fileUrl", url)
+        }
+        //获取包名
+        function packageGet(message) {
+            allFnList = [...new Set(message.text)];
+            if (!allFnList.length) {
+                return
+            }
+            allFnList.forEach(item => {
+                let txt = fiters(item)
+                if (txt && txt != '' && txt != "") {
+                    txt = txt.replace(/</g, "&lt;");
+                    txt = txt.replace(/>/g, "&gt;");
+                    let strarr = txt.split(":")
+                    let str1 = strarr[0]
+                    let strArr1 = str1.split(".")
+                    let str2 = strArr1.slice(0, strArr1.length - 1)
+                    let ss = str2.join(".")
+                    if (!packageArr.includes(ss) && str1.includes(ss)) {
+                        packageArr.push(ss)
+                    }
+                }
+            })
+            let str = ''
+            for (let i = 0; i < packageArr.length; i++) { //循环添加多个值
+                str += `<option value="${packageArr[i]}">${packageArr[i]}</option>`
+            }
+            str += `<option value="">请选择包</option>`
+            $("#ddlResourceType").html(str)
+            $('#ddlResourceType').val('')
+        }
+        function selectPackage() {
+            let pacKName = $('#ddlResourceType').val()
+            let clabox = []
+            allFnList.forEach(item => {
+                let txt = fiters(item)
+                if (txt && txt != '' && txt != "" && txt.includes(pacKName)) {
+                    txt = txt.replace(/</g, "&lt;");
+                    txt = txt.replace(/>/g, "&gt;");
+                    let strarr = txt.split(":")
+                    let str1 = strarr[0]
+                    let strArr1 = str1.split(".")
+                    let str2 = strArr1.slice(strArr1.length - 1)
+                    let ss = str2.join(".")
+                    let starStr = strArr1.slice(0, strArr1.length - 1).join('.')
+                    if (!clabox.includes(ss) && starStr == pacKName) {
+                        clabox.push(ss)
+                    }
+                }
+            })
+            let str = ''
+            for (let i = 0; i < clabox.length; i++) { //循环添加多个值
+                str += `<option value="${clabox[i]}">${clabox[i]}</option>`
+            }
+            str += `<option value="">请选类</option>`
+            $("#classbo").html(str)
+            $("#classbo").val('')
+            $("#fns").html('')
+        }
+        function sliceClass() {
+            let clasName = $("#classbo").val()
+            let pacKName = $('#ddlResourceType').val()
+            let str = ''
+            let strpc = `${pacKName}.${clasName}`
+            allFnList.forEach((item, index) => {
+                let txt = fiters(item)
+                if (txt && txt != '' && txt != "" && txt.includes(strpc)) {
+                    txt = txt.replace(/</g, "&lt;");
+                    txt = txt.replace(/>/g, "&gt;");
+                    let id = `node${index}`;
+                    let strArr = txt.split(":")
+                    if (strArr[0] == strpc) {
+                        str += `<div class="noList"><div class="cpNode" data-clipboard-text="${txt}" id="${id}">${txt}</div><span  class="cptxt" data-clipboard-action="copy" data-clipboard-target="#${id}">复制</span></div>`
+                    }
+                }
+            })
+            $("#fns").html(str)
+        }
+        //数据过滤
+        function fiters(str) {
+            let newstr = ""
+            if (str && str != '') {
+                let arrstr = str.split("|")
+                let claFn = arrstr[0]
+                newstr = claFn.slice(1, claFn.length - 1)
+            }
+            return newstr
+        }
+        //新增rule
+        function addCanvas() {
+            $("#rulename").val('')
+            Topology.init()
+        }
+        //保存
+        $(document).on("click", "#canvas_save", function () {
+            saveData()
+        });
+        function saveData() {
+            let ruleName = document.getElementById('rulename').value;
+            vscode.postMessage({ command: 'save', text: canvas.data, name: ruleName, type: 'add' });
+        }
+        //生成rules 列表
+        function createList(message) {
+            let obj = message.ruleList
+            let str = "";
+            let arr = Object.keys(obj)
+            for (let i = 0; i < arr.length; i++) {
+                str += `<div class="ruleNode">${arr[i]}<span class="del-li" ruleName='${arr[i]}' ruleList='${arr}'>删除</span><span ruleName='${arr[i]}' ruleList='${arr}' class="edit-li">编辑</span></div>`
+            }
+            $("#ruleList").html(str)
+        }
+        //刷新数据
+        function refresh(data) {
+            changColor('miFileUrl', data.miFileUrl)
+            Topology.init(data.fsmcurrent)
+        }
+        // //打开弹框
+        function addUrule() {
+            isEdit = ''
+            $("#contentInp").val('')
+            $("#idTxt").val('')
+            $('#exampleModal').modal('show')
+        }
+        // //关闭弹窗
+        function closeDialog(e) {
+            isEdit = ''
+            $('#exampleModal').modal('hide')
+        }
+        //提交数据
+        function submit() {
+            let names = $("#contentInp").val()
+            let remark = $("#idTxt").val()
+            let id = isEdit;
+            vscode.postMessage({ command: 'addUrule', text: '', id: id, remark: remark, name: names, type: 'add' });
+        }
+        //创建urule数据
+        function createData(message) {
+            let arr = message.dataList
+            let str = '';
+            for (let i = 0; i < arr.length; i++) {
+                let id = `urule${i}`
+                str += `<div class="ruleNode">
+                          <span  class="cope-li" data-clipboard-action="copy" data-clipboard-target="#${id}">复制</span>
+                          <span class="showName" id="${id}">${arr[i].name}</span>
+                          <span class="del-li" ruleName='${arr[i].remark}' ids='${arr[i].id}' remark='${arr[i].remark}'>删除</span>
+                          <span ruleName='${arr[i].name}' ruleList='${arr}' ids='${arr[i].id}'  remark='${arr[i].remark}' class="edit-li">编辑</span>
+                        </div>`
+            }
+            $("#urule").html(str)
+        }
+        //执行shell脚本
+        function toShell() {
+            let ruleName = document.getElementById('rulename').value || '';
+            if (ruleName) {
+                vscode.postMessage({ command: 'shell', text: '', name: ruleName, type: 'shell' });
+            }
+        }
+        //.................................//
+
+        $("#ruleList").on("click", ".del-li", function () {
+            let i = $(this).index();
+            let ruleName = $(this).attr('ruleName')
+            let ruleList = $(this).attr('ruleList')
+            vscode.postMessage({ command: 'del', text: '', name: ruleName, type: 'del' });
+        });
+        //编辑
+        $("#ruleList").on("click", ".edit-li", function () {
+            let i = $(this).index();
+            let ruleName = $(this).attr('ruleName')
+            let ruleList = $(this).attr('ruleList')
+            // $(".isShow").css('display', 'block')
+            $('#rulename').val(ruleName)
+            vscode.postMessage({ command: 'edit', text: '', name: ruleName, type: 'edit' });
+        });
+        //删除urule
+        $("#urule").on("click", ".del-li", function () {
+            let i = $(this).index();
+            let id = $(this).attr('ids')
+            vscode.postMessage({ command: 'delURule', text: '', id: id, type: 'del' });
+        });
+        //编辑urule 
+        $("#urule").on("click", ".edit-li", function () {
+            isEdit = ''
+            let ruleName = $(this).attr('ruleName')
+            let remark = $(this).attr('remark')
+            $('#exampleModal').modal('show')
+            isEdit = $(this).attr('ids')
+            $("#contentInp").val(ruleName)
+            $("#idTxt").val(remark)
+        });
+
+        //...................................................................//
+
+        //复制函数
+        let clipboard = new ClipboardJS('.cptxt');
+        clipboard.on('success', function (e) {
+            console.log(e);
+        });
+
+        clipboard.on('error', function (e) {
+            console.log(e);
+        });
+        let clipboard1 = new ClipboardJS('.cope-li');
+        clipboard1.on('success', function (e) {
+            console.log(e);
+        });
+
+        clipboard1.on('error', function (e) {
+            console.log(e);
+        });
+    </script>
 </body>
 
 </html>
