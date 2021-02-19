@@ -122,6 +122,9 @@ function activate(context) {
 						  case 'shell':	
 							toShell(message)
 							break;	
+							case 'test':		
+						//	let testObj = message	
+							break;	
 
 			  }
 		 }, undefined, context.subscriptions);
@@ -424,7 +427,7 @@ function toShell(message){
 	})
 	let filLis = [tableMiUrl,jarUrl,newfile,confUrl]
 	let fileNameArr = [tableMi,jarflie,fileNames,configFlie ]
-	terminalB.sendText(`${extensionPath}\\test.py ${serverUseName} ${serverPasswd} ${serverIp} ${filLis} ${fileNameArr} ${mainpyUrl} ${tarGetUrl} ${newFileUrl}`)
+	terminalB.sendText(`python ${extensionPath}\\test.py ${serverUseName} ${serverPasswd} ${serverIp} ${filLis} ${fileNameArr} ${mainpyUrl} ${tarGetUrl} ${newFileUrl}`)
 }
 module.exports = {
 	activate,

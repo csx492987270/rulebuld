@@ -832,11 +832,11 @@
                                                 <div class="flex grid">
                                                     <div class="mr5 col-xs-6">
                                                         <div class="input-group colorpicker colorpicker-element">
-                                                            <input type="text" name="strokeStyle"
+                                                            <input type="text" name="strokeStyle" disabled
                                                                 class="form-control input-sm" onchange="onChangeProp()">
-                                                            <div class="input-group-addon">
+                                                            <!-- <div class="input-group-addon">
                                                                 <i></i>
-                                                            </div>
+                                                            </div> -->
                                                         </div>
                                                     </div>
                                                     <div class="col-xs-6">
@@ -1197,12 +1197,26 @@
             $("#classbo").html(str)
             $("#classbo").val('')
             $("#fns").html('')
+            let fnTxt = ''
+            let strpc = `${pacKName}`
+            htmlFns(strpc)
         }
         function sliceClass() {
             let clasName = $("#classbo").val()
             let pacKName = $('#ddlResourceType').val()
-            let str = ''
-            let strpc = `${pacKName}.${clasName}`
+            let strpc = ''
+            if(clasName && clasName !=''){
+                strpc = `${pacKName}.${clasName}`
+            }else {
+                strpc = `${pacKName}`
+            }
+            htmlFns(strpc)
+        }
+        function htmlFns(strpc){
+            $("#fns").html('')
+            let fnTxt = ''
+            let classbo =$("#classbo").val()
+            let arrNh = []
             allFnList.forEach((item, index) => {
                 let txt = fiters(item)
                 if (txt && txt != '' && txt != "" && txt.includes(strpc)) {
@@ -1210,12 +1224,22 @@
                     txt = txt.replace(/>/g, "&gt;");
                     let id = `node${index}`;
                     let strArr = txt.split(":")
-                    if (strArr[0] == strpc) {
-                        str += `<div class="noList"><div class="cpNode" data-clipboard-text="${txt}" id="${id}">${txt}</div><span  class="cptxt" data-clipboard-action="copy" data-clipboard-target="#${id}">复制</span></div>`
+                    let newStrArr= strArr[0].split(".")
+                    if(classbo && classbo !=''){
+                       if (strArr[0] == strpc) {
+                          fnTxt += `<div class="noList"><div class="cpNode" data-clipboard-text="${txt}" id="${id}">${txt}</div><span  class="cptxt" data-clipboard-action="copy" data-clipboard-target="#${id}">复制</span></div>`
+                        }
+                    }else {
+                        arrNh= newStrArr.slice(0,newStrArr.length-1)              
+                       if (arrNh.join(".")== strpc) {
+                          fnTxt += `<div class="noList"><div class="cpNode" data-clipboard-text="${txt}" id="${id}">${txt}</div><span  class="cptxt" data-clipboard-action="copy" data-clipboard-target="#${id}">复制</span></div>`
+                       }
                     }
+                   
                 }
             })
-            $("#fns").html(str)
+           // vscode.postMessage({ command: 'test', text:arrNh,strpc:strpc,blean:arrNh.join(".")== strpc});
+            $("#fns").html(fnTxt)
         }
         //数据过滤
         function fiters(str) {

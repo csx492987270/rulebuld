@@ -317,7 +317,7 @@ var Topology = {
                     name: '开始/结束',
                     icon: 'icon-flow-start',
                     data: {
-                        text: '开始',
+                        text: 'start',
                         rect: {
                             width: 120,
                             height: 40
@@ -902,6 +902,7 @@ var Topology = {
     },
     // 初始化画布
     initCanvas: function (newData) {
+        // console.log(55555)
         var self = this;
         console.log("initCanvas")
         // 3. 向引擎注册图形库图形及其相关元素
@@ -947,7 +948,7 @@ var Topology = {
 
         // 监听画布
         function onMessage(event, data) {
-            console.log(event, data);
+            // console.log(event+'34543535');
             switch (event) {
                 case 'node':
                     selNodes = [data];
@@ -1012,6 +1013,7 @@ var Topology = {
                     self.initNode();
                     break;
                 case 'addLine':
+                    // console.log(2222222)
                     selected = {
                         "type": event,
                         "data": data
@@ -1023,6 +1025,20 @@ var Topology = {
                     $("#flex_props_home").removeClass("hidden");
                     $("#flex_props_node").addClass("hidden");
                     break;
+                 case 'setText':
+                     console.log(data)
+                     if(data.type==1){
+                        if(data.text && data.text !=undefined && data.text.includes("|")){
+                             data.strokeStyle = "#f2054f"
+                         }
+                        selected = {
+                            "type": event,
+                            "data": data
+                        };
+                        locked = data.locked;
+                        self.initLine();
+                     }
+                     break;   
                 // case 'resize':
                 //     if (!this.mouseMoving) {
                 //         this.mouseMoving = true;
@@ -1139,6 +1155,8 @@ var Topology = {
     },
     // 初始化line
     initLine: function () {
+        // console.log(44444)
+        // console.log(selected)
         var self = this;
         $("#node_line_color").html("连线颜色");
         $("#flex_props_home").addClass("hidden");
@@ -1203,6 +1221,7 @@ var Topology = {
     },
     // 重置属性
     onChangeProp: function () {
+        selected.data.text = $("textarea[name=text]").val();
         if (selected.type == "line") {
             //位置起点x
             selected.data.from.x = parseInt($("input[name=from_x]").val());
@@ -1212,6 +1231,12 @@ var Topology = {
             selected.data.to.x = parseInt($("input[name=to_x]").val());
             //位置终点y
             selected.data.to.y = parseInt($("input[name=to_y]").val());
+            console.log(selected.data)
+            if(selected.data.text && selected.data.text !=undefined && selected.data.text.includes("|")){
+             selected.data.strokeStyle = "#f2054f"
+            }else {
+             selected.data.strokeStyle = $("input[name=strokeStyle]").val();
+            }    
         }
         if (selected.type == "node") {
             //x轴坐标
@@ -1236,9 +1261,15 @@ var Topology = {
             selected.data.paddingTop = $("input[name=paddingTop]").val();
             //下边距
             selected.data.paddingBottom = $("input[name=paddingBottom]").val();
+            selected.data.strokeStyle = $("input[name=strokeStyle]").val();
         }
-        //线条颜色
-        selected.data.strokeStyle = $("input[name=strokeStyle]").val();
+        if(selected.type == 'addLine'){
+            if(selected.data.text && selected.data.text !=undefined && selected.data.text.includes("|")){
+                selected.data.strokeStyle = "#f2054f"
+               }else {
+                selected.data.strokeStyle = $("input[name=strokeStyle]").val();
+               } 
+        }
         //线宽
         selected.data.lineWidth = parseInt($("input[name=lineWidth]").val());
         //背景样式
@@ -1267,7 +1298,6 @@ var Topology = {
         selected.data.font.lineHeight = parseFloat($("input[name=lineHeight]").val());
         //最大行数
         selected.data.font.textMaxLine = parseInt($("input[name=textMaxLine]").val());
-        selected.data.text = $("textarea[name=text]").val();
         //备注
         selected.data.data = {};
         selected.data.data.remark = $("textarea[name=data]").val();

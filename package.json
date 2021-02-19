@@ -1,15 +1,16 @@
 {
-	"name": "rulebuild",
+	"name": "rulebuilder",
 	"displayName": "RuleBuild",
-	"description": "topology 集成",
-	"publisher": "sixue",
-	"version": "0.0.7",
+	"description": "鉴释 ruleBuilder",
+	"publisher": "jianshi",
+	"version": "0.1.0",
 	"engines": {
 		"vscode": "^1.52.0"
 	},
 	"categories": [
 		"Other"
 	],
+	"icon": "images/logo.png",
 	"activationEvents": [
 		"onCommand:rulebuild.helloWorld",
 		"onCommand:rulebuild.newHtml"

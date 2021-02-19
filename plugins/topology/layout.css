@@ -593,3 +593,6 @@ div{
     border-bottom: 1px solid #dddddd;
     clear: both;
 }
+.input-group-addon {
+    z-index: -100;
+}
