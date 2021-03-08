@@ -1225,7 +1225,7 @@
                     let id = `node${index}`;
                     let strArr = txt.split(":")
                     let newStrArr= strArr[0].split(".")
-                    if(classbo && classbo !=''){
+                    if(classbo && classbo !=''){  
                        if (strArr[0] == strpc) {
                           fnTxt += `<div class="noList"><div class="cpNode" data-clipboard-text="${txt}" id="${id}">${txt}</div><span  class="cptxt" data-clipboard-action="copy" data-clipboard-target="#${id}">复制</span></div>`
                         }

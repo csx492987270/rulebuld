@@ -3,6 +3,7 @@
 const vscode = require('vscode');
 const path = require('path');
 const fs =  require('fs');
+const {isWindows} =  require('./plugins/topology/os');
 let ruleList = {}; //fms 数据
 let fileUrl = "" //.rule 文件路径
 let ruleJsonUrl= "" //fsm 路径url
@@ -15,6 +16,7 @@ let tableMiUrl = ''  //vtable.mi 路径
 let tableMiName = '' //vtable.mi名字
 let jarUrl = '' //jar 路径
 let jarName ='' //jar名字
+let sys = ''
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 /**
@@ -29,13 +31,18 @@ function activate(context) {
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with  registerCommand
 	// The commandId parameter must match the command field in package.json
+	sys = isWindows()
 	if(context.extensionPath){
 		extensionPath = context.extensionPath
 	}
 	if(vscode.workspace.workspaceFolders[0].uri.path){
 		fileUrl =vscode.workspace.workspaceFolders[0].uri.path;
 		fileUrl= `${fileUrl}/.rule`;
-		fileUrl = fileUrl.replace('/','');
+		if(!sys){
+		}else {
+			 fileUrl = fileUrl.replace('/','');
+		}
+	   
 		ruleJsonUrl= `${fileUrl}/fsm.json`
 		dataListUrl= `${fileUrl}/dataList.json`
 	}
@@ -73,9 +80,15 @@ function activate(context) {
 		panel.webview.onDidReceiveMessage(message => {
 			switch (message.command) {
 				case "createFs":
+					    let XVSA= process.env.XVSA_HOME || ''
 						let terminalA = vscode.window.createTerminal({ name: "createFn" });
 						terminalA.show(true);
-						let cmds = `mvn io.xc5:xvsa-maven-plugin:1.39:gather -Dxvsa.dir="${extensionPath}\\xvsa"  -Dxvsa.phantom=true -X -Djfe.opt="-v,-dumpMethodName=true,-win32=true,-libGen=true,-libGenOnly=true" -Dxvsa.lib.gen=true`
+						let cmds = "";
+						if(!!sys){
+						   cmds = `mvn io.xc5:xvsa-maven-plugin:1.39:gather -Dxvsa.dir="${extensionPath}\\xvsa"  -Dxvsa.phantom=true -X -Djfe.opt="-v,-dumpMethodName=true,-win32=true,-libGen=true,-libGenOnly=true" -Dxvsa.lib.gen=true`
+						}else {
+						   cmds = `mvn io.xc5:xvsa-maven-plugin:1.39:gather -Dxvsa.dir=${XVSA}  -Dxvsa.phantom=true -X -Djfe.opt="-v,-dumpMethodName=true,-VTABLE=true,-libGenOnly=true" -Dxvsa.lib.gen=true`
+						}
 						terminalA.sendText(cmds); //输入命令
 						clearInterval(timer)
 						fnsList = []
@@ -222,7 +235,7 @@ function createFile(){
 	if(checkDir) {
 		return
 	}
-	fs.mkdir(fileUrl, 0777, function(err){
+	fs.mkdir(fileUrl, "0777", function(err){
 		  if(err){
 			  console.log(err);
 		  }else{
@@ -290,7 +303,10 @@ function delRule(message,panel){
 function fnList(panel){	
 	let url = vscode.workspace.workspaceFolders[0].uri.path
 	let miurl= `${url}/target/xvsa-out`
-	 miurl = miurl.replace('/','')
+	if(!sys){
+	}else {
+		 miurl = miurl.replace('/','')
+	}
      let  checkDir = fs.existsSync(miurl);
      if (checkDir){
 	 let files = fs.readdirSync( miurl );
@@ -302,6 +318,7 @@ function fnList(panel){
 		 tableMiUrl = newUl //赋值
 		 fs.readFile(newUl,'utf-8',(err,data)=>{
 			if(data){		
+
 				let	miFlie = data.split("\n") 
 				fnsList = miFlie
 				//packageGet(fnsList)
@@ -382,7 +399,10 @@ function delURule(message,panel){
 function getJarUrl(){
 	let url = vscode.workspace.workspaceFolders[0].uri.path
 	let miurl= `${url}/target`
-	miurl = miurl.replace('/','')
+	if(!sys){
+	}else {
+		 miurl = miurl.replace('/','')
+	}
 	let  checkDir = fs.existsSync(miurl)
 	if(checkDir){
 		let files = fs.readdirSync( miurl );
@@ -427,7 +447,14 @@ function toShell(message){
 	})
 	let filLis = [tableMiUrl,jarUrl,newfile,confUrl]
 	let fileNameArr = [tableMi,jarflie,fileNames,configFlie ]
-	terminalB.sendText(`python ${extensionPath}\\test.py ${serverUseName} ${serverPasswd} ${serverIp} ${filLis} ${fileNameArr} ${mainpyUrl} ${tarGetUrl} ${newFileUrl}`)
+	let pytest = ''
+
+	if(!sys){
+		pytest =`${extensionPath}/test.py`
+	}else {
+		pytest =`${extensionPath}\\test.py`
+	}
+	terminalB.sendText(`python ${pytest} ${serverUseName} ${serverPasswd} ${serverIp} ${filLis} ${fileNameArr} ${mainpyUrl} ${tarGetUrl} ${newFileUrl}`)
 }
 module.exports = {
 	activate,
