@@ -84,11 +84,10 @@ function activate(context) {
 						let terminalA = vscode.window.createTerminal({ name: "createFn" });
 						terminalA.show(true);
 						let cmds = "";
-						if(!!sys){
-						   terminalA.sendText('cmd'); //输入命令
-						   cmds = `mvn io.xc5:xvsa-maven-plugin:1.39:gather -Dxvsa.dir="${extensionPath}\\xvsa" -Dxvsa.phantom=true -X -Djfe.opt="-v,-dumpMethodName=true,-win32=true,-libGen=true,-libGenOnly=true" -Dxvsa.lib.gen=true`
+						if(!sys){
+						   cmds = `mvn io.xc5:xvsa-maven-plugin:1.39:gather -Dxvsa.dir="${extensionPath}\\xvsa"  -Dxvsa.phantom=true -X -Djfe.opt="-v,-dumpMethodName=true,-win32=true,-libGen=true,-libGenOnly=true" -Dxvsa.lib.gen=true`
 						}else {
-						   cmds = `mvn io.xc5:xvsa-maven-plugin:1.39:gather -Dxvsa.dir=${XVSA} -Dxvsa.phantom=true -X -Djfe.opt="-v,-dumpMethodName=true,-libGenOnly=true,-VTABLE=true" -Dxvsa.lib.gen=true`
+						   cmds = `mvn io.xc5:xvsa-maven-plugin:1.39:gather -Dxvsa.dir=${XVSA}  -Dxvsa.phantom=true -X -Djfe.opt="-v,-dumpMethodName=true,-VTABLE=true,-libGenOnly=true" -Dxvsa.lib.gen=true`
 						}
 						terminalA.sendText(cmds); //输入命令
 						clearInterval(timer)
@@ -455,7 +454,6 @@ function toShell(message){
 	}else {
 		pytest =`${extensionPath}\\test.py`
 	}
-	terminalB.sendText('cmd'); //输入命令
 	terminalB.sendText(`python ${pytest} ${serverUseName} ${serverPasswd} ${serverIp} ${filLis} ${fileNameArr} ${mainpyUrl} ${tarGetUrl} ${newFileUrl}`)
 }
 module.exports = {

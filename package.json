@@ -3,7 +3,7 @@
 	"displayName": "RuleBuild",
 	"description": "鉴释 ruleBuilder",
 	"publisher": "jianshi",
-	"version": "0.1.0",
+	"version": "0.1.4",
 	"engines": {
 		"vscode": "^1.52.0"
 	},
