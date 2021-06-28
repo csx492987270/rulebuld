@@ -16,7 +16,8 @@ let tableMiUrl = ''  //vtable.mi 路径
 let tableMiName = '' //vtable.mi名字
 let jarUrl = '' //jar 路径
 let jarName ='' //jar名字
-let sys = ''
+let sys = ''  //判断系统
+let arrlistUrl = [] //c的数据
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 /**
@@ -34,7 +35,7 @@ function activate(context) {
 	sys = isWindows()
 	if(context.extensionPath){
 		extensionPath = context.extensionPath
-	}
+	}	
 	if(vscode.workspace.workspaceFolders[0].uri.path){
 		fileUrl =vscode.workspace.workspaceFolders[0].uri.path;
 		fileUrl= `${fileUrl}/.rule`;
@@ -42,7 +43,6 @@ function activate(context) {
 		}else {
 			 fileUrl = fileUrl.replace('/','');
 		}
-	   
 		ruleJsonUrl= `${fileUrl}/fsm.json`
 		dataListUrl= `${fileUrl}/dataList.json`
 	}
@@ -50,6 +50,7 @@ function activate(context) {
     getRules()
 	getDataList()	
 	getJarUrl()
+	// console.log(vscode.languages.getLanguages())
 	let disposable = vscode.commands.registerCommand('rulebuild.helloWorld', function () {
 		// The code you place here will be executed every time your command is executed
 
@@ -57,7 +58,7 @@ function activate(context) {
 		vscode.window.showInformationMessage('Hello World from RuleBuild!');
 	});
 	const webviewDir = path.join(context.extensionPath, 'views');
-	let newHtml=vscode.commands.registerCommand('rulebuild.newHtml', () => {
+	let newHtml=vscode.commands.registerCommand('rulebuild.newHtml-java', () => {
 		createFile()
 		getRules()
 		getDataList()	
@@ -106,7 +107,7 @@ function activate(context) {
 							editRule(message,panel) 
 							  break;
 						  case 'del':	
-							delRule(message,panel)
+							delRule(message,panel,'java')
 						   break;
 						   case 'delURule':	
 						   delURule(message,panel)
@@ -127,7 +128,7 @@ function activate(context) {
 							break;
 						  case 'save':	
 						  if(!message.name){
-							vscode.window.showErrorMessage('请输入ruleName');
+							vscode.window.showErrorMessage('请输入fsmName');
 							return
 						  }else {	
 							saveRule(message,panel)	 
@@ -143,7 +144,89 @@ function activate(context) {
 			  }
 		 }, undefined, context.subscriptions);
 	})
+	let newHtmlC=vscode.commands.registerCommand('rulebuild.newHtml-c', () => {
+		const panel = vscode.window.createWebviewPanel(
+			'testWebview', // viewType
+			"RuleBulider", // 视图标题
+			vscode.ViewColumn.One, // 显示在编辑器的哪个部位
+			{
+				enableScripts: true, // 启用JS，默认禁用
+				retainContextWhenHidden: true // webview被隐藏时保持状态，避免被重置
+			}
+		);
+	    createFile()
+        getRules()
+	    getDataList()	
+	    let cfnList = getfnc()
+		panel.webview.html =  getWebViewContent(context, 'topology_es5_c.html'); //加载html文件资源
+		setTimeout(() => {
+		 panel.webview.postMessage({ruleList:ruleList,type:'ruleList',dataList:dataListJson,cfnList:cfnList}); 
+		},500)
+		panel.webview.onDidReceiveMessage(async (message)=> {
+			switch (message.command) {
+				case "createFs":
+					let arr = [];
+					let miurl = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri.path : '';
+					miurl = miurl.replace('/', '')
+					let arrlist = await	getAll('',miurl);
+					for (let fileUrl of arrlistUrl) {
+						await vscode.window.showTextDocument(vscode.Uri.file(fileUrl));
+						var activeEditor = vscode.window.activeTextEditor;
+						let iiurl = activeEditor?activeEditor.document.uri:''
+						let symbols = await vscode.commands.executeCommand('vscode.executeDocumentSymbolProvider', iiurl )
+						if (symbols !== undefined && symbols.length) {
+							for (let item of symbols){
+								if (item.kind == 11) {
+									let str = item.name
+									arr.push(str)
+								}
+							}
+							 // console.log(arr)
+						   }
+					  }
+					createCfnJson(arr)
+					panel.webview.postMessage({fnlist:arr,type:'createFn'});
+					break;
+					case 'addUrule':		 
+					if(!message.name){
+						 vscode.window.showErrorMessage('请输入ruleName');
+						 panel.webview.postMessage({type:'addUrule',status:'none'})
+					   return
+					 }else {	
+						 let obj={}
+						 obj.name = message.name
+						 obj.remark = message.remark
+						 obj.id =message.id?message.id:new Date().getTime()
+						 let type = message.id?'edit':'add'
+						 createDataJson(obj,panel,type)
+					}	 	  			  
+					 break;
+					 case 'del':	
+					   delRule(message,panel,'c')
+					  break;
+					 case 'delURule':
+						delURule(message,panel)
+						break;
+					case 'save':	
+						if(!message.name){
+						  vscode.window.showErrorMessage('请输入fsmName');
+						  return
+						}else {	
+						  saveRuleC(message,panel)	 
+						}	
+						 break;
+						 case 'edit':	
+						 editRule(message,panel) 
+						   break;
+						case 'shell':	
+						 toShell(message)
+						 break;    
+
+			  }
+		 }, undefined, context.subscriptions);
+	})
 	context.subscriptions.push(newHtml);
+	context.subscriptions.push(newHtmlC);
 	context.subscriptions.push(disposable);
 }
 exports.activate = activate;
@@ -253,7 +336,7 @@ function createFile(){
 			return;
 		}
 	});
-  };
+}
 //获取历史rules数据
 function getRules(){ 
 
@@ -287,7 +370,7 @@ function editRule(message,panel){
 	})
 }
 //删除rule 数据
-function delRule(message,panel){
+function delRule(message,panel,type){
  	fs.readFile(ruleJsonUrl,'utf-8',(err,data)=>{
  		if(data){
  			let newData = JSON.parse(data) 
@@ -295,7 +378,11 @@ function delRule(message,panel){
 			let miFileUrl = `${fileUrl}/${message.name}.mi`  
  			panel.webview.postMessage({ruleList:newData,type:'del',miFileUrl:miFileUrl,name:message.name});
  			message.text = newData
- 			saveRule(message,panel)
+			 if(type=='java'){
+				saveRule(message,panel)
+			 }else {
+				saveRuleC(message,panel)
+			 }
  		}
  	})
 }
@@ -366,7 +453,7 @@ function createDataJson(obj,panel,type){
 	})
 }
 //获取remark数据
-  function getRemark(fsmJson){
+function getRemark(fsmJson){
 	  let links= [];
 	  fsmJson.links.forEach(item=>{
 	  let blean = item.text.includes("|")
@@ -457,6 +544,170 @@ function toShell(message){
 	}
 	terminalB.sendText('cmd'); //输入命令
 	terminalB.sendText(`python ${pytest} ${serverUseName} ${serverPasswd} ${serverIp} ${filLis} ${fileNameArr} ${mainpyUrl} ${tarGetUrl} ${newFileUrl}`)
+}
+/****************************************************************** */
+/****************************************************************** */
+/****************************************************************** */
+/****************************************************************** */
+/****************************************************************** */
+
+/**   ------------------------------------  c function ----------------------------------------------------------------------------- */
+/****************************************************************** */
+/****************************************************************** */
+/****************************************************************** */
+/****************************************************************** */
+/****************************************************************** */
+/****************************************************************** */
+/****************************************************************** */
+/****************************************************************** */
+function saveRuleC(message,panel){
+	let obj = {}
+	switch(message.type){
+		case 'del':
+		  obj= message.text
+		  let url = `${fileUrl}/${message.name}.mi`  
+          deleteFolderRecursive(url)
+		   fs.writeFile(ruleJsonUrl,JSON.stringify(obj,"","\t"),'utf-8',(err,data)=>{
+				if (err) {res.status(500).send('Server is error...')}
+			 })
+			break;
+		case 'add':
+			let fsmJson=message.text
+		    // fsmJson =  getRemark(fsmJson);
+			createMiC(fsmJson ,  message) //创建规则mi
+			let miFileUrl =`${fileUrl}/${message.name}.mi`  
+			fs.readFile(ruleJsonUrl,'utf-8',(err,data)=>{			
+				if(data){
+					let newData = JSON.parse(data)  
+					obj = newData;
+					obj[message.name]=fsmJson
+					fs.writeFile(ruleJsonUrl,JSON.stringify(obj,"","\t"),'utf-8',(err,data)=>{
+					  if (err) {res.status(500).send('Server is error...')}
+					})
+				}else if(err && err.code=='ENOENT' ) {
+					obj[message.name] = fsmJson 
+					fs.writeFile(ruleJsonUrl,JSON.stringify(obj,"","\t"),'utf-8',(err,data)=>{
+						  if (err) {res.status(500).send('Server is error...')}
+					 })
+				}	
+				panel.webview.postMessage({ruleList:obj,type:'ruleList',miFileUrl:miFileUrl});
+			})
+			break;
+		default:
+			break;	
+
+  } 
+}
+//urule 数据
+function createCfnJson(arr){
+	let cFunctionUrl= `${fileUrl}/cFunction.json`
+	fs.writeFile(cFunctionUrl,JSON.stringify(arr,"","\t"),'utf-8',(err,data)=>{
+		if (err) {res.status(500).send('Server is error...')}
+	})
+}
+//生成规则c mi
+function createMiC(fsmJson,message){
+	let urls= `${fileUrl}/${message.name}.mi`  
+	let jsdata=fliterC(fsmJson)
+	fs.writeFile(urls,jsdata,function(err){     
+	  if (err) {res.status(500).send('Server is error...')}
+	}) 
+}
+//生的c mi文件
+function fliterC(obj){
+	let str = ''
+	let DEF_ACTION = ''
+	let DECLARE = ''
+	let allArr = obj.pens || []
+	let nodeList = allArr.filter(item=>item.type==0) || []
+	let lines =  allArr.filter(item=>item.type==1) || []
+	nodeList.forEach(item => {
+		str += `NODE|${item.text}\n`
+	});
+	lines.forEach(item=>{
+		let txt = item.text
+		let arr=txt.includes("|")?txt.split("|"):[]
+		let from = allArr.filter(it=>item.from.id==it.id)
+		let to =  allArr.filter(it=>item.to.id==it.id)
+		if(arr.length){
+			  let remarkArr= dataListJson.filter(it=>it.name==arr[1])
+			   DECLARE += `DECLARE|${arr[1]}|CUSTOM|${remarkArr.length?remarkArr[0].remark:''}\n`
+			if(arr.length && arr[0] !="" &&  arr[0] !=''){
+				str += `EDGE|${from[0]['text']}|${to[0]['text']}|${arr[0]}|none|this()|${arr.length?arr[1]:'none'}\n`
+			}else {
+			   DEF_ACTION += `DEF_ACTION|${from[0]['text']}|${arr[1]}\n`
+			}
+		}else {
+			str += `EDGE|${from[0]['text']}|${to[0]['text']}|${item.text}|none|this()|none\n`
+		}	
+	})
+	return `${str}${DEF_ACTION}${DECLARE}`
+}
+function getfnc(){
+	let cFunctionUrl= `${fileUrl}/cFunction.json`
+	let  checkDir = fs.existsSync(cFunctionUrl);	 
+    if(checkDir){
+   	 let cfnList = fs.readFileSync(cFunctionUrl, 'utf-8');
+	   return JSON.parse(cfnList) 
+     }else {
+	   return []
+	 }
+}
+//获取程文件
+function getAll(level, dir) {
+    var filesNameArr = []
+	arrlistUrl=[]
+    let cur = 0
+    // 用个hash队列保存每个目录的深度
+    var mapDeep = {}
+    mapDeep[dir] = 0
+    // 先遍历一遍给其建立深度索引
+    function getMap(dir, curIndex) {
+      var files = fs.readdirSync(dir) //同步拿到文件目录下的所有文件名
+      files.map(function (file) {
+        //var subPath = path.resolve(dir, file) //拼接为绝对路径
+        var subPath = path.join(dir, file) //拼接为相对路径
+        var stats = fs.statSync(subPath) //拿到文件信息对象
+        // 必须过滤掉node_modules文件夹
+        if (file != 'node_modules') {
+          mapDeep[file] = curIndex + 1
+          if (stats.isDirectory()) { //判断是否为文件夹类型
+            return getMap(subPath, mapDeep[file]) //递归读取文件夹
+          }
+        }
+      })
+    }
+    getMap(dir, mapDeep[dir])
+    function readdirs(dir, folderName, myroot) {
+      var result = { //构造文件夹数据
+        path: dir,
+        title: path.basename(dir),
+        type: 'directory',
+        deep: mapDeep[folderName]
+      }
+      var files = fs.readdirSync(dir) //同步拿到文件目录下的所有文件名
+      result.children = files.map(function (file) {
+        //var subPath = path.resolve(dir, file) //拼接为绝对路径
+        var subPath = path.join(dir, file) //拼接为相对路径
+        var stats = fs.statSync(subPath) //拿到文件信息对象
+        if (stats.isDirectory()) { //判断是否为文件夹类型
+          return readdirs(subPath, file, file) //递归读取文件夹
+        }
+	 	if(subPath.endsWith('.c')){
+		   	arrlistUrl.push(subPath)
+	  	}
+     return { //构造文件数据
+          path: subPath,
+          name: file,
+          type: 'file'
+        }
+      })
+      return result //返回数据
+    }
+    filesNameArr.push(readdirs(dir, dir))
+	// console.log(filesNameArr)
+	// console.log(arrlistUrl)
+    return filesNameArr
 }
 module.exports = {
 	activate,

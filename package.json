@@ -13,7 +13,8 @@
 	"icon": "images/logo.png",
 	"activationEvents": [
 		"onCommand:rulebuild.helloWorld",
-		"onCommand:rulebuild.newHtml"
+		"onCommand:rulebuild.newHtml-java",
+		"onCommand:rulebuild.newHtml-c"
 	],
 	"main": "./extension.js",
 	"contributes": {
@@ -23,15 +24,25 @@
 				"title": "Hello World"
 			},
 			{
-				"command": "rulebuild.newHtml",
-				"title": "RuleBulider"
+				"command": "rulebuild.newHtml-java",
+				"title": "RuleBulider-java"
+			},
+			{
+				"command": "rulebuild.newHtml-c",
+				"title": "RuleBulider-c"
 			}
 		],
 		"menus": {
 			"editor/context": [
 				{
-					"command": "rulebuild.newHtml",
-					"group": "1_modification"
+					"command": "rulebuild.newHtml-java",
+					"group": "1_modification",
+					"when": "editorLangId == java"
+				},
+				{
+					"command": "rulebuild.newHtml-c",
+					"group": "1_modification",
+					"when": "editorLangId == c"
 				}
 			]
 		},
