@@ -135,7 +135,7 @@ function activate(context) {
 						  }	
 							 break;
 						  case 'shell':	
-							toShell(message)
+							toShell(message,'java')
 							break;	
 							case 'test':		
 						//	let testObj = message	
@@ -167,7 +167,10 @@ function activate(context) {
 				case "createFs":
 					let arr = [];
 					let miurl = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri.path : '';
-					miurl = miurl.replace('/', '')
+					if(!sys){
+					}else {
+						 miurl = miurl.replace('/','')
+					}
 					let arrlist = await	getAll('',miurl);
 					for (let fileUrl of arrlistUrl) {
 						await vscode.window.showTextDocument(vscode.Uri.file(fileUrl));
@@ -219,7 +222,7 @@ function activate(context) {
 						 editRule(message,panel) 
 						   break;
 						case 'shell':	
-						 toShell(message)
+						 toShell(message,'c')
 						 break;    
 
 			  }
@@ -505,7 +508,7 @@ function getJarUrl(){
 	}
 }
 //执行shell
-function toShell(message){
+function toShell(message,type){
 	let terminalB = vscode.window.createTerminal({ name: "createFn" });
 	let str = message.name
 	terminalB.show(true);
@@ -528,7 +531,7 @@ function toShell(message){
 	dataListJson.forEach(item=>{
 		rules.push({rulecode:item.name,"ruleset": "CUSTOM", "description": item.remark, "name":  item.remark})
 	})
-	let strConfig = `[config]\nname = "${message.name}"\nlang = "java"\nxvsa_path="${XVSA_PATH}"\ninput = "${fileNames}"\nreferences = "${tableMi}"\ndependency = "${jarflie}"\nhost = "${serverIp}"\nuser = "${databaseUser}"\nport = "${databasePort}"\npassword="${databasePassword}"\nrules=${JSON.stringify(rules)}\ntarget = "${tarGetUrl}"`
+	let strConfig = `[config]\nname = "${message.name}"\nlang = "${type}"\nxvsa_path="${XVSA_PATH}"\ninput = "${fileNames}"\nreferences = "${tableMi}"\ndependency = "${jarflie}"\nhost = "${serverIp}"\nuser = "${databaseUser}"\nport = "${databasePort}"\npassword="${databasePassword}"\nrules=${JSON.stringify(rules)}\ntarget = "${tarGetUrl}"`
 	let confUrl = `${fileUrl}/config.ini`
 	fs.writeFile(confUrl,strConfig,'utf-8',(err,data)=>{
 		if (err) {res.status(500).send('Server is error...')}
